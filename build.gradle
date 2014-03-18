@@ -1,0 +1,55 @@
+import java.text.SimpleDateFormat
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'java'
+
+
+Date buildTimeAndDate = new Date()
+project.ext {
+    buildTime = new SimpleDateFormat('dd-MMM-yyyy').format(buildTimeAndDate)
+    buildDate = new SimpleDateFormat('hh:mm aa').format(buildTimeAndDate)
+    release = new SimpleDateFormat("yyyyMMddHHmmss").format(buildTimeAndDate)
+}
+
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://projectlombok.org/mavenrepo"
+    }
+    mavenLocal()
+    maven {
+        url "https://github.com/scenarioo/mvn-repo/raw/master"
+    }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+
+    maven {
+        url "http://repo.codahale.com/"
+    }
+
+}
+
+
+
+dependencies {
+    compile 'junit:junit:4.+'
+    compile 'org.scenarioo:scenarioo-api:0.1.17'
+    compile 'com.codeborne:selenide:2.6.1'
+    compile 'org.apache.commons:commons-lang3:3.0.1'
+    compile 'commons-io:commons-io:1.3.2'
+    compile 'commons-codec:commons-codec:1.6'
+}
+
+
+task scenariooDocu(type: Test, dependsOn: jar) {
+    testClassesDir = sourceSets.test.output.classesDir
+    classpath = sourceSets.test.runtimeClasspath
+    systemProperties['jar.path'] = jar.archivePath
+    systemProperties["scenarioo.enabled"] = "true"
+}
+
+//check.dependsOn("scenariooDocu")
